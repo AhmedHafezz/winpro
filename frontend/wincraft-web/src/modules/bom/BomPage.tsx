@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '../../core/api/axios'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -7,7 +7,7 @@ type Tab = 'bars' | 'pieces' | 'glasses' | 'fittings'
 
 export function BomPage() {
   const [activeTab, setActiveTab] = useState<Tab>('bars')
-  const [bomId, setBomId] = useState<string | null>(null)
+  const [bomId] = useState<string | null>(null)
 
   const { data: bomData } = useQuery({
     queryKey: ['bom', bomId],

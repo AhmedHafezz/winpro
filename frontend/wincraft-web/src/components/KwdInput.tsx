@@ -1,4 +1,3 @@
-import React from 'react'
 import { useController, type Control } from 'react-hook-form'
 import clsx from 'clsx'
 

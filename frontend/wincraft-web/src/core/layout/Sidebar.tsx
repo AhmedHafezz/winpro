@@ -9,12 +9,11 @@ const navItems = [
   { label: 'التصاميم',       path: '/designs',      icon: '✏️', permission: 'design.view' },
   { label: 'حساب المواد',    path: '/bom',           icon: '🔧', permission: 'design.view' },
   { label: 'بروفايلات',      path: '/profiles',     icon: '📐', permission: 'design.view' },
-  { label: 'المشاريع',       path: '/projects',     icon: '🏗️', permission: 'prod.view' },
-  { label: 'أوامر التصنيع',  path: '/work-orders',  icon: '⚙️', permission: 'prod.view' },
-  { label: 'المخزون',        path: '/inventory',    icon: '📦', permission: 'inv.view' },
-  { label: 'المعاينات',      path: '/surveys',      icon: '📍', permission: 'crm.view' },
-  { label: 'التسليم',        path: '/dispatch',     icon: '🚚', permission: 'prod.view' },
-  { label: 'التركيب',        path: '/installation', icon: '🔨', permission: 'prod.view' },
+  { label: 'المشاريع',       path: '/projects',     icon: '🏗️', permission: 'project.view' },
+  { label: 'أوامر التصنيع',  path: '/work-orders',  icon: '⚙️', permission: 'production.view' },
+  { label: 'المخزون',        path: '/inventory',    icon: '📦', permission: 'warehouse.view' },
+  { label: 'المعاينات',      path: '/surveys',      icon: '📍', permission: 'survey.view' },
+  { label: 'التسليم والتركيب', path: '/dispatch',   icon: '🚚', permission: 'install.view' },
   { label: 'التقارير',       path: '/reports',      icon: '📈', permission: 'reports.view' },
 ]
 

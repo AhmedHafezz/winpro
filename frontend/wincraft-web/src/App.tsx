@@ -6,6 +6,11 @@ import { DashboardPage } from './pages/DashboardPage'
 import { CustomersPage } from './modules/crm/CustomersPage'
 import { QuotationsPage } from './modules/quotation/QuotationsPage'
 import { BomPage } from './modules/bom/BomPage'
+import WorkOrdersPage from './modules/shopfloor/WorkOrdersPage'
+import InventoryPage from './modules/inventory/InventoryPage'
+import ProjectsPage from './modules/projects/ProjectsPage'
+import SurveysPage from './modules/survey/SurveysPage'
+import DispatchPage from './modules/dispatch/DispatchPage'
 
 export default function App() {
   return (
@@ -17,6 +22,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+
           <Route path="/crm" element={<ProtectedRoute permission="crm.view" />}>
             <Route index element={<CustomersPage />} />
           </Route>
@@ -25,6 +31,21 @@ export default function App() {
           </Route>
           <Route path="/bom" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<BomPage />} />
+          </Route>
+          <Route path="/work-orders" element={<ProtectedRoute permission="production.view" />}>
+            <Route index element={<WorkOrdersPage />} />
+          </Route>
+          <Route path="/inventory" element={<ProtectedRoute permission="warehouse.view" />}>
+            <Route index element={<InventoryPage />} />
+          </Route>
+          <Route path="/projects" element={<ProtectedRoute permission="project.view" />}>
+            <Route index element={<ProjectsPage />} />
+          </Route>
+          <Route path="/surveys" element={<ProtectedRoute permission="survey.view" />}>
+            <Route index element={<SurveysPage />} />
+          </Route>
+          <Route path="/dispatch" element={<ProtectedRoute permission="install.view" />}>
+            <Route index element={<DispatchPage />} />
           </Route>
         </Route>
       </Route>
