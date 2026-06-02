@@ -17,6 +17,7 @@ import Visualizer3D from './modules/design/Visualizer3D'
 import ShopFloor from './modules/shopfloor/ShopFloor'
 import QuotationHub from './modules/quotation/QuotationHub'
 import CRMPage from './modules/crm/CRMPage'
+import ReportsPage from './pages/ReportsPage'
 
 export default function App() {
   return (
@@ -70,6 +71,9 @@ export default function App() {
           </Route>
           <Route path="/dispatch" element={<ProtectedRoute permission="install.view" />}>
             <Route index element={<DispatchPage />} />
+          </Route>
+          <Route path="/reports" element={<ProtectedRoute permission="reports.view" />}>
+            <Route index element={<ReportsPage />} />
           </Route>
         </Route>
       </Route>
