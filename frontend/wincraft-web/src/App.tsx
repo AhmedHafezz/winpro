@@ -18,6 +18,7 @@ import ShopFloor from './modules/shopfloor/ShopFloor'
 import QuotationHub from './modules/quotation/QuotationHub'
 import CRMPage from './modules/crm/CRMPage'
 import ReportsPage from './pages/ReportsPage'
+import ProfilesPage from './pages/ProfilesPage'
 
 export default function App() {
   return (
@@ -74,6 +75,9 @@ export default function App() {
           </Route>
           <Route path="/reports" element={<ProtectedRoute permission="reports.view" />}>
             <Route index element={<ReportsPage />} />
+          </Route>
+          <Route path="/profiles" element={<ProtectedRoute permission="design.view" />}>
+            <Route index element={<ProfilesPage />} />
           </Route>
         </Route>
       </Route>
