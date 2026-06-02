@@ -7,6 +7,7 @@ const navItems = [
   { label: 'إدارة العملاء',  path: '/crm',          icon: '👥', permission: 'crm.view' },
   { label: 'عروض الأسعار',   path: '/quotations',   icon: '📄', permission: 'quote.view' },
   { label: 'التصاميم',       path: '/designs',      icon: '✏️', permission: 'design.view' },
+  { label: 'مُجسِّم 3D',     path: '/visualizer',   icon: '🧊', permission: 'design.view' },
   { label: 'حساب المواد',    path: '/bom',           icon: '🔧', permission: 'design.view' },
   { label: 'بروفايلات',      path: '/profiles',     icon: '📐', permission: 'design.view' },
   { label: 'المشاريع',       path: '/projects',     icon: '🏗️', permission: 'project.view' },

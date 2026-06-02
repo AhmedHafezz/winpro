@@ -12,6 +12,7 @@ import ProjectsPage from './modules/projects/ProjectsPage'
 import SurveysPage from './modules/survey/SurveysPage'
 import DispatchPage from './modules/dispatch/DispatchPage'
 import { DesignConfigurator } from './modules/design/DesignConfigurator'
+import Visualizer3D from './modules/design/Visualizer3D'
 
 export default function App() {
   return (
@@ -32,6 +33,9 @@ export default function App() {
           </Route>
           <Route path="/designs" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<DesignConfigurator />} />
+          </Route>
+          <Route path="/visualizer" element={<ProtectedRoute permission="design.view" />}>
+            <Route index element={<Visualizer3D />} />
           </Route>
           <Route path="/bom" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<BomPage />} />
