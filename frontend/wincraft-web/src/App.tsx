@@ -11,6 +11,7 @@ import InventoryPage from './modules/inventory/InventoryPage'
 import ProjectsPage from './modules/projects/ProjectsPage'
 import SurveysPage from './modules/survey/SurveysPage'
 import DispatchPage from './modules/dispatch/DispatchPage'
+import { DesignConfigurator } from './modules/design/DesignConfigurator'
 
 export default function App() {
   return (
@@ -28,6 +29,9 @@ export default function App() {
           </Route>
           <Route path="/quotations" element={<ProtectedRoute permission="quote.view" />}>
             <Route index element={<QuotationsPage />} />
+          </Route>
+          <Route path="/designs" element={<ProtectedRoute permission="design.view" />}>
+            <Route index element={<DesignConfigurator />} />
           </Route>
           <Route path="/bom" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<BomPage />} />
