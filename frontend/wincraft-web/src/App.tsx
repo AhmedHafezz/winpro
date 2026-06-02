@@ -9,10 +9,14 @@ import { BomPage } from './modules/bom/BomPage'
 import WorkOrdersPage from './modules/shopfloor/WorkOrdersPage'
 import InventoryPage from './modules/inventory/InventoryPage'
 import ProjectsPage from './modules/projects/ProjectsPage'
+import ProjectHub from './modules/projects/ProjectHub'
 import SurveysPage from './modules/survey/SurveysPage'
 import DispatchPage from './modules/dispatch/DispatchPage'
 import { DesignConfigurator } from './modules/design/DesignConfigurator'
 import Visualizer3D from './modules/design/Visualizer3D'
+import ShopFloor from './modules/shopfloor/ShopFloor'
+import QuotationHub from './modules/quotation/QuotationHub'
+import CRMPage from './modules/crm/CRMPage'
 
 export default function App() {
   return (
@@ -48,6 +52,18 @@ export default function App() {
           </Route>
           <Route path="/projects" element={<ProtectedRoute permission="project.view" />}>
             <Route index element={<ProjectsPage />} />
+          </Route>
+          <Route path="/project-hub" element={<ProtectedRoute permission="project.view" />}>
+            <Route index element={<ProjectHub />} />
+          </Route>
+          <Route path="/shop-floor" element={<ProtectedRoute permission="production.view" />}>
+            <Route index element={<ShopFloor />} />
+          </Route>
+          <Route path="/quotation-hub" element={<ProtectedRoute permission="quote.view" />}>
+            <Route index element={<QuotationHub />} />
+          </Route>
+          <Route path="/crm-hub" element={<ProtectedRoute permission="crm.view" />}>
+            <Route index element={<CRMPage />} />
           </Route>
           <Route path="/surveys" element={<ProtectedRoute permission="survey.view" />}>
             <Route index element={<SurveysPage />} />
