@@ -3,6 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../core/auth/useAuth'
+import { useAuthStore } from '../core/auth/authStore'
+
+const DEMO_EMAIL    = 'admin@wincraft.demo'
+const DEMO_PASSWORD = 'demo1234'
 
 const schema = z.object({
   email:    z.string().email('بريد إلكتروني غير صحيح'),
@@ -11,15 +15,41 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export function LoginPage() {
-  const navigate  = useNavigate()
-  const login     = useLogin()
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const navigate        = useNavigate()
+  const login           = useLogin()
+  const { setToken, setUser } = useAuthStore()
+
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
   const onSubmit = async (data: FormData) => {
-    await login.mutateAsync(data)
-    navigate('/dashboard')
+    // Demo mode — no backend needed
+    if (data.email === DEMO_EMAIL && data.password === DEMO_PASSWORD) {
+      setToken('demo-token')
+      setUser({
+        userId:      '1',
+        fullName:    'مدير النظام',
+        email:       DEMO_EMAIL,
+        role:        'admin',
+        permissions: ['admin.*'],
+        tenantId:    'demo',
+      })
+      navigate('/dashboard')
+      return
+    }
+    // Real backend login
+    try {
+      await login.mutateAsync(data)
+      navigate('/dashboard')
+    } catch {
+      // error shown via login.isError
+    }
+  }
+
+  const fillDemo = () => {
+    setValue('email',    DEMO_EMAIL)
+    setValue('password', DEMO_PASSWORD)
   }
 
   return (
@@ -28,6 +58,22 @@ export function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-brand-600">WinCraft ERP</h1>
           <p className="text-slate-500 mt-1 text-sm">تسجيل الدخول</p>
+        </div>
+
+        {/* Demo banner */}
+        <div className="mb-5 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700">
+          <div className="font-bold mb-1">🚀 وضع العرض التجريبي</div>
+          <div className="font-mono text-xs mb-2">
+            <span className="text-blue-500">email:</span> {DEMO_EMAIL}<br />
+            <span className="text-blue-500">password:</span> {DEMO_PASSWORD}
+          </div>
+          <button
+            type="button"
+            onClick={fillDemo}
+            className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+          >
+            تعبئة تلقائية ←
+          </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
