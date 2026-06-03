@@ -3,12 +3,8 @@ import { ProtectedRoute } from './core/auth/ProtectedRoute'
 import { AppShell } from './core/layout/AppShell'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
-import { CustomersPage } from './modules/crm/CustomersPage'
-import { QuotationsPage } from './modules/quotation/QuotationsPage'
 import { BomPage } from './modules/bom/BomPage'
-import WorkOrdersPage from './modules/shopfloor/WorkOrdersPage'
 import InventoryPage from './modules/inventory/InventoryPage'
-import ProjectsPage from './modules/projects/ProjectsPage'
 import ProjectHub from './modules/projects/ProjectHub'
 import SurveysPage from './modules/survey/SurveysPage'
 import DispatchPage from './modules/dispatch/DispatchPage'
@@ -31,11 +27,17 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
 
-          <Route path="/crm" element={<ProtectedRoute permission="crm.view" />}>
-            <Route index element={<CustomersPage />} />
+          {/* redirects for old API routes */}
+          <Route path="/crm" element={<Navigate to="/crm-hub" replace />} />
+          <Route path="/quotations" element={<Navigate to="/quotation-hub" replace />} />
+          <Route path="/work-orders" element={<Navigate to="/shop-floor" replace />} />
+          <Route path="/projects" element={<Navigate to="/project-hub" replace />} />
+
+          <Route path="/crm-hub" element={<ProtectedRoute permission="crm.view" />}>
+            <Route index element={<CRMPage />} />
           </Route>
-          <Route path="/quotations" element={<ProtectedRoute permission="quote.view" />}>
-            <Route index element={<QuotationsPage />} />
+          <Route path="/quotation-hub" element={<ProtectedRoute permission="quote.view" />}>
+            <Route index element={<QuotationHub />} />
           </Route>
           <Route path="/designs" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<DesignConfigurator />} />
@@ -46,14 +48,8 @@ export default function App() {
           <Route path="/bom" element={<ProtectedRoute permission="design.view" />}>
             <Route index element={<BomPage />} />
           </Route>
-          <Route path="/work-orders" element={<ProtectedRoute permission="production.view" />}>
-            <Route index element={<WorkOrdersPage />} />
-          </Route>
-          <Route path="/inventory" element={<ProtectedRoute permission="warehouse.view" />}>
-            <Route index element={<InventoryPage />} />
-          </Route>
-          <Route path="/projects" element={<ProtectedRoute permission="project.view" />}>
-            <Route index element={<ProjectsPage />} />
+          <Route path="/profiles" element={<ProtectedRoute permission="design.view" />}>
+            <Route index element={<ProfilesPage />} />
           </Route>
           <Route path="/project-hub" element={<ProtectedRoute permission="project.view" />}>
             <Route index element={<ProjectHub />} />
@@ -61,11 +57,8 @@ export default function App() {
           <Route path="/shop-floor" element={<ProtectedRoute permission="production.view" />}>
             <Route index element={<ShopFloor />} />
           </Route>
-          <Route path="/quotation-hub" element={<ProtectedRoute permission="quote.view" />}>
-            <Route index element={<QuotationHub />} />
-          </Route>
-          <Route path="/crm-hub" element={<ProtectedRoute permission="crm.view" />}>
-            <Route index element={<CRMPage />} />
+          <Route path="/inventory" element={<ProtectedRoute permission="warehouse.view" />}>
+            <Route index element={<InventoryPage />} />
           </Route>
           <Route path="/surveys" element={<ProtectedRoute permission="survey.view" />}>
             <Route index element={<SurveysPage />} />
@@ -75,9 +68,6 @@ export default function App() {
           </Route>
           <Route path="/reports" element={<ProtectedRoute permission="reports.view" />}>
             <Route index element={<ReportsPage />} />
-          </Route>
-          <Route path="/profiles" element={<ProtectedRoute permission="design.view" />}>
-            <Route index element={<ProfilesPage />} />
           </Route>
         </Route>
       </Route>
