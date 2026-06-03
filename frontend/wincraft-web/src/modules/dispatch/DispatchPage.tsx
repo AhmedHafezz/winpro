@@ -89,6 +89,30 @@ export default function DispatchPage() {
 
   useEffect(() => save(db), [db])
 
+  useEffect(() => {
+    const raw = localStorage.getItem("wincraft_intent");
+    if (!raw) return;
+    try {
+      const intent = JSON.parse(raw);
+      if (intent.type === "new_dispatch" && intent.project) {
+        const p = intent.project;
+        const newOrder: DispatchOrder = {
+          id: uid(), refNo: `DSP-${String(db.orders.length + 1).padStart(3, "0")}`,
+          clientName: p.customer, phone: p.phone || "", address: p.city || "",
+          projectRef: p.id, status: "معلق",
+          deliveryDate: "", installDate: "",
+          crew: CREWS[0], vehicle: VEHICLES[0],
+          items: [], notes: `من المشروع ${p.id}`,
+        };
+        setDb(d => ({ orders: [...d.orders, newOrder] }));
+        setSelected(newOrder);
+        setView("detail");
+        localStorage.removeItem("wincraft_intent");
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const orders = db.orders.filter(o => !statusFilter || o.status === statusFilter)
 
   const counts = (['معلق', 'مجدول', 'في الطريق', 'تم التسليم', 'مثبت'] as DispatchStatus[]).map(s => ({

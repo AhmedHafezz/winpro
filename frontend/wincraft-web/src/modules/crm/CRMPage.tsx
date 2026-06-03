@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DB_KEY = "eva_crm";
 
@@ -124,6 +125,7 @@ function Avatar({ name }: { name: string }) {
 }
 
 export default function CRMPage() {
+  const navigate = useNavigate();
   const [db, setDb] = useDB();
   const [view, setView] = useState<"customers" | "pipeline" | "activities">("customers");
   const [selected, setSelected] = useState<string | null>(null);
@@ -333,6 +335,29 @@ export default function CRMPage() {
                     {activeCustomer.notes}
                   </div>
                 )}
+
+                {/* Integration Actions */}
+                <div style={{ marginTop: 16, padding: "12px 0", borderTop: "1px solid #f1f5f9" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>إجراءات سريعة</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("wincraft_intent", JSON.stringify({ type: "new_quotation", customer: { name: activeCustomer.name, phone: activeCustomer.phone, email: activeCustomer.email, address: activeCustomer.city } }));
+                        navigate("/quotation-hub");
+                      }}
+                      style={{ padding: "7px 14px", borderRadius: 7, border: "none", background: "#eff6ff", color: "#1e4db7", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+                      📄 إنشاء عرض سعر
+                    </button>
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("wincraft_intent", JSON.stringify({ type: "new_project", customer: { name: activeCustomer.name, phone: activeCustomer.phone, city: activeCustomer.city } }));
+                        navigate("/project-hub");
+                      }}
+                      style={{ padding: "7px 14px", borderRadius: 7, border: "none", background: "#f0fdf4", color: "#059669", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+                      🏗️ إنشاء مشروع
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

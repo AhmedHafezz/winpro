@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DB_KEY = "eva_quotation_hub";
 
@@ -204,6 +205,7 @@ function QuotationPreview({ q, onClose }: QuotationPreviewProps) {
 }
 
 export default function QuotationHub() {
+  const navigate = useNavigate();
   const [db, setDb] = useDB();
   const [selected, setSelected] = useState<string | null>(null);
   const [tab, setTab] = useState<"info" | "items" | "summary">("info");
@@ -212,6 +214,20 @@ export default function QuotationHub() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [itemForm, setItemForm] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const raw = localStorage.getItem("wincraft_intent");
+    if (!raw) return;
+    try {
+      const intent = JSON.parse(raw);
+      if (intent.type === "new_quotation" && intent.customer) {
+        const c = intent.customer;
+        setForm({ customer: c.name || "", phone: c.phone || "", email: c.email || "", address: c.address || "" });
+        setShowForm(true);
+        localStorage.removeItem("wincraft_intent");
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   const quotations = db.quotations.filter(q => !filterStatus || q.status === filterStatus);
   const activeQ = db.quotations.find(q => q.id === selected) ?? null;
@@ -454,6 +470,21 @@ export default function QuotationHub() {
                     <button onClick={() => setPreviewId(activeQ.id)} style={{ marginTop: 16, width: "100%", padding: "12px", borderRadius: 8, border: "none", background: "#1e4db7", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
                       🖨️ معاينة وطباعة
                     </button>
+                    {activeQ.status === "accepted" && (
+                      <button
+                        onClick={() => {
+                          const { total } = calcTotal(activeQ);
+                          localStorage.setItem("wincraft_intent", JSON.stringify({
+                            type: "new_project",
+                            customer: { name: activeQ.customer, phone: activeQ.phone, city: activeQ.address },
+                            quotation: { code: activeQ.code, total, items: activeQ.items.map(i => ({ code: i.id, name: i.description, location: i.location, w: i.width, h: i.height, qty: i.qty, glass: i.glassType, series: i.series, price: i.unitPrice })) },
+                          }));
+                          navigate("/project-hub");
+                        }}
+                        style={{ marginTop: 8, width: "100%", padding: "12px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
+                        🏗️ تحويل لمشروع
+                      </button>
+                    )}
                   </div>
                 );
               })()}

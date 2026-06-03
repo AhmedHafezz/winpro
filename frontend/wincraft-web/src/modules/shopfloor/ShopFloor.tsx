@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const DB_KEY = "eva_shopfloor";
 
@@ -185,6 +185,37 @@ export default function ShopFloor() {
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const raw = localStorage.getItem("wincraft_intent");
+    if (!raw) return;
+    try {
+      const intent = JSON.parse(raw);
+      if (intent.type === "new_work_order" && intent.project) {
+        const p = intent.project;
+        const newOrder: WorkOrder = {
+          id: `wo-${Date.now()}`,
+          code: `WO-${new Date().getFullYear()}-${String(db.orders.length + 1).padStart(3, "0")}`,
+          project: p.name, customer: p.customer,
+          assignedTo: "", priority: "normal", status: "pending",
+          dueDate: "", notes: `من المشروع ${p.id}`,
+          pieces: (p.items || []).map((item: { code: string; description: string; width: number; height: number; qty: number }, idx: number) => ({
+            id: `p-${Date.now()}-${idx}`,
+            profile: "60×40",
+            length: item.width || item.height || 1200,
+            qty: item.qty || 1,
+            color: "أبيض",
+            projectCode: p.id,
+            status: "pending" as const,
+          })),
+        };
+        setDb({ ...db, orders: [...db.orders, newOrder] });
+        setSelected(newOrder.id);
+        localStorage.removeItem("wincraft_intent");
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);;
 
   const orders = db.orders.filter(o => !filterStatus || o.status === filterStatus);
   const activeOrder = db.orders.find(o => o.id === selected) ?? null;

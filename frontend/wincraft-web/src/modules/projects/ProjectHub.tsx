@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface DesignRow { code: string; name: string; location: string; w: number; h: number; qty: number; glass: string; series: string; price: number }
@@ -138,6 +139,7 @@ const btnG: React.CSSProperties = { padding: "9px 18px", background: "#f1f5f9", 
 
 // ─── Project Detail ────────────────────────────────────────────────────────────
 function ProjectDetail({ project, onClose, onUpdate }: { project: Project; onClose: () => void; onUpdate: (p: Project) => void }) {
+  const navigate = useNavigate();
   const [subTab, setSubTab] = useState("documents");
   const [actForm, setActForm] = useState({ type: "Call", text: "", date: new Date().toISOString().split("T")[0], user: "Sales" });
 
@@ -184,6 +186,28 @@ function ProjectDetail({ project, onClose, onUpdate }: { project: Project; onClo
           ))}
         </div>
         <button style={btnP("#f97316")}>Quick Quote</button>
+        <button
+          style={btnP("#7c3aed")}
+          onClick={() => {
+            localStorage.setItem("wincraft_intent", JSON.stringify({
+              type: "new_work_order",
+              project: { id: project.id, name: project.name, customer: project.customer, items: project.designs.map(d => ({ code: d.code, description: d.name, location: d.location, width: d.w, height: d.h, qty: d.qty })) },
+            }));
+            navigate("/shop-floor");
+          }}>
+          ⚙️ أمر تصنيع
+        </button>
+        <button
+          style={btnP("#0891b2")}
+          onClick={() => {
+            localStorage.setItem("wincraft_intent", JSON.stringify({
+              type: "new_dispatch",
+              project: { id: project.id, name: project.name, customer: project.customer, phone: project.phone, city: project.city },
+            }));
+            navigate("/dispatch");
+          }}>
+          🚚 أمر تسليم
+        </button>
       </div>
 
       {/* Customer strip */}
@@ -507,6 +531,35 @@ export default function ProjectHub() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("الكل");
   const [sortBy, setSortBy] = useState("date");
+
+  useEffect(() => {
+    const raw = localStorage.getItem("wincraft_intent");
+    if (!raw) return;
+    try {
+      const intent = JSON.parse(raw);
+      if (intent.type === "new_project") {
+        const c = intent.customer || {};
+        const q = intent.quotation;
+        const newId = `EVA-QT-${String(data.projects.length + 1).padStart(5, "0")}`;
+        const newProject: Project = {
+          id: newId, name: q ? `مشروع ${c.name}` : `مشروع ${c.name || "جديد"}`,
+          customer: c.name || "", phone: c.phone || "", city: c.city || "",
+          status: "Active", createdAt: new Date().toISOString().split("T")[0],
+          dueDate: "", assignedTo: "", revision: 1,
+          totalQty: q ? q.items.reduce((s: number, i: DesignRow) => s + i.qty, 0) : 0,
+          notes: q ? `من عرض السعر ${q.code}` : "",
+          designs: q ? q.items : [],
+          documents: q ? [{ id: 1, name: `عرض السعر ${q.code}`, type: "quotation", date: new Date().toISOString().split("T")[0], size: "-", status: "Approved" }] : [],
+          payments: [],
+          activities: [{ id: 1, type: "Note", text: q ? `تم إنشاء المشروع من عرض السعر ${q.code}` : "تم إنشاء المشروع", date: new Date().toISOString().split("T")[0], user: "النظام" }],
+        };
+        save({ ...data, projects: [...data.projects, newProject] });
+        setActiveProject(newProject);
+        localStorage.removeItem("wincraft_intent");
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { projects } = data;
 
