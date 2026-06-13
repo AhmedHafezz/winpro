@@ -332,7 +332,10 @@ function ProjectDetail({ project, onClose, onUpdate }: { project: Project; onClo
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Window &amp; Door Designs</h3>
-              <button style={btnP()}>Open Configurator</button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => { localStorage.setItem("wincraft_intent", JSON.stringify({ type: "bom_project", projectId: project.id })); navigate("/bom"); }} style={{ ...btnG, fontSize: 12 }}>🔧 حساب BOM</button>
+                <button style={btnP()}>Open Configurator</button>
+              </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
               {project.designs.map(d => (

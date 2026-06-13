@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type SurveyStatus = 'مجدولة' | 'جارية' | 'مكتملة' | 'ملغاة'
 
@@ -76,6 +77,7 @@ const save = (db: DB) => localStorage.setItem('eva_surveys', JSON.stringify(db))
 const uid = () => Math.random().toString(36).slice(2, 9)
 
 export default function SurveysPage() {
+  const navigate = useNavigate()
   const [db, setDb] = useState<DB>(load)
   const [view, setView] = useState<'list' | 'form' | 'detail'>('list')
   const [selected, setSelected] = useState<Survey | null>(null)
@@ -262,6 +264,36 @@ export default function SurveysPage() {
               <strong>ملاحظات: </strong>{selected.notes}
             </div>
           )}
+          {selected.status === 'مكتملة' && (
+            <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 space-y-2">
+              <p className="text-sm font-medium text-green-800">المعاينة مكتملة — الخطوة التالية:</p>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={() => {
+                  localStorage.setItem('wincraft_intent', JSON.stringify({ type: 'new_quotation', customer: { name: selected.clientName, phone: selected.phone, email: '', address: selected.address } }))
+                  navigate('/quotation-hub')
+                }} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700">
+                  📄 إنشاء عرض سعر
+                </button>
+                <button onClick={() => {
+                  localStorage.setItem('wincraft_intent', JSON.stringify({ type: 'new_quotation', customer: { name: selected.clientName, phone: selected.phone, email: '', address: selected.address } }))
+                  // Also create in CRM
+                  try {
+                    const crmRaw = localStorage.getItem('eva_crm')
+                    const crm = crmRaw ? JSON.parse(crmRaw) : { customers: [], deals: [], activities: [] }
+                    const exists = crm.customers.some((c: { phone: string }) => c.phone === selected.phone)
+                    if (!exists) {
+                      crm.customers.unshift({ id: `c-${Date.now()}`, name: selected.clientName, type: 'individual', phone: selected.phone, email: '', city: selected.address, status: 'prospect', totalValue: 0, projectCount: 0, createdAt: new Date().toISOString().split('T')[0], notes: `من معاينة ${selected.refNo}` })
+                      localStorage.setItem('eva_crm', JSON.stringify(crm))
+                    }
+                  } catch { /* ignore */ }
+                  navigate('/crm-hub')
+                }} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700">
+                  👥 إضافة للـ CRM
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3 mt-4">
             {(['مجدولة', 'جارية', 'مكتملة'] as SurveyStatus[]).map(st => (
               <button key={st} onClick={() => changeStatus(selected.id, st)}

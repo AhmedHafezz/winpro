@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DB_KEY = "eva_shopfloor";
 
@@ -179,6 +180,7 @@ function CuttingDiagram({ pieces }: { pieces: CutPiece[] }) {
 }
 
 export default function ShopFloor() {
+  const navigate = useNavigate();
   const [db, setDb] = useDB();
   const [selected, setSelected] = useState<string | null>(null);
   const [tab, setTab] = useState<"pieces" | "cutting" | "notes">("pieces");
@@ -390,6 +392,20 @@ export default function ShopFloor() {
                   );
                 })}
               </div>
+              {/* Integration: done → dispatch */}
+              {activeOrder.status === "done" && (
+                <button
+                  onClick={() => {
+                    localStorage.setItem("wincraft_intent", JSON.stringify({
+                      type: "new_dispatch",
+                      project: { id: activeOrder.code, name: activeOrder.project, customer: activeOrder.customer, phone: "", city: "" },
+                    }));
+                    navigate("/dispatch");
+                  }}
+                  style={{ marginTop: 10, width: "100%", padding: "8px", borderRadius: 7, border: "none", background: "#0891b2", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
+                  🚚 إنشاء أمر تسليم
+                </button>
+              )}
             </div>
 
             {/* Tabs */}

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSystemStats } from '../core/store/databridge';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -111,6 +112,8 @@ const RANK_MEDALS = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
 export default function ReportsPage() {
   const [tab, setTab]       = useState<TabId>("overview");
   const [period, setPeriod] = useState("year");
+  const [live, setLive]     = useState(getSystemStats());
+  useEffect(() => setLive(getSystemStats()), []);
 
   const totalRevenue   = MONTHLY.reduce((s, m) => s + m.revenue, 0);
   const totalCost      = MONTHLY.reduce((s, m) => s + m.cost, 0);
@@ -153,6 +156,25 @@ export default function ReportsPage() {
         <button style={{ padding: "6px 12px", background: "#0369a1", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 11, fontWeight: 700 }}>
           تصدير Excel ↓
         </button>
+      </div>
+
+      {/* Live data banner */}
+      <div style={{ background: "#0c4a6e", padding: "10px 20px", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ fontSize: 10, color: "#7dd3fc", fontWeight: 700, letterSpacing: 1 }}>البيانات الحية ▸</span>
+        {[
+          { l: "العملاء",    v: live.customers,          c: "#60a5fa" },
+          { l: "العروض",     v: live.quotations,         c: "#34d399" },
+          { l: "المشاريع",   v: live.projects,           c: "#fbbf24" },
+          { l: "أوامر تصنيع",v: live.workOrders,         c: "#f472b6" },
+          { l: "قيمة العروض",v: live.totalQuotValue.toFixed(0)+" KWD", c: "#a78bfa" },
+          { l: "قيمة المشاريع",v: live.totalProjValue.toFixed(0)+" KWD", c: "#fb923c" },
+          { l: "مخزون منخفض",v: live.lowStockItems + " صنف",    c: live.lowStockItems > 0 ? "#f87171" : "#34d399" },
+        ].map(k => (
+          <div key={k.l} style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 9, color: "#94a3b8" }}>{k.l}</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: k.c }}>{k.v}</div>
+          </div>
+        ))}
       </div>
 
       {/* Tabs */}
